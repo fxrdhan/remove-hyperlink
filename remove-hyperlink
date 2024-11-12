@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Script name: remove-hyperlink
-# Description: Removes hyperlink formatting from a Markdown file, including patterns like [[text\]](url).
-
 # Function to display script usage
 usage() {
     echo "Usage: $0 input.md [output.md]"
