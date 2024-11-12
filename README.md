@@ -1,7 +1,7 @@
 # Markdown Link Remover Script
 
 ## Description
-This script removes hyperlink formatting from Markdown files with enhanced error handling and robustness. It processes multiple types of hyperlinks and URLs:
+This script removes hyperlink formatting from Markdown files. It processes multiple types of hyperlinks and URLs:
 
 1. Wiki-style links: `[[text\]](url)`
 2. Standard Markdown links: `[text](url)`
