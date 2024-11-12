@@ -1,43 +1,42 @@
 #!/bin/bash
 
-# Nama skrip: remove-hyperlink
-# Deskripsi: Menghapus format hyperlink dari file Markdown, termasuk pola khusus seperti [[teks\]](url).
+# Script name: remove-hyperlink
+# Description: Removes hyperlink formatting from a Markdown file, including patterns like [[text\]](url).
 
-# Fungsi untuk menampilkan penggunaan skrip
+# Function to display script usage
 usage() {
     echo "Usage: $0 input.md [output.md]"
     exit 1
 }
 
-# Cek apakah setidaknya ada satu argumen
+# Check if there is at least one argument
 if [ $# -lt 1 ]; then
     usage
 fi
 
 input_file="$1"
 
-# Cek apakah file input ada
+# Check if the input file exists
 if [ ! -f "$input_file" ]; then
-    echo "Error: File '$input_file' tidak ditemukan."
+    echo "Error: File '$input_file' not found."
     exit 1
 fi
 
-# Jika ada argumen kedua, gunakan sebagai file output
+# If there is a second argument, use it as the output file
 if [ $# -ge 2 ]; then
     output_file="$2"
-    # Gunakan sed untuk menghapus hyperlink dan simpan ke file output
+    # Use sed to remove hyperlinks and save to the output file
     sed -E '
-        # Menghapus hyperlink dengan pola [[teks\]](url)
+        # Remove hyperlinks with pattern [[text\]](url)
         s/\[\[([^\\\]]+)\\?\]\]\([^)]*\)/\1/g;
-        # Menghapus hyperlink standar [teks](url)
+        # Remove standard hyperlinks [text](url)
         s/\[([^]]+)\]\([^)]*\)/\1/g
     ' "$input_file" > "$output_file"
-    echo "Hyperlink telah dihapus dan hasil disimpan di '$output_file'."
+    echo "Hyperlinks have been removed and the result is saved in '$output_file'."
 else
-    # Jika tidak ada argumen kedua, tampilkan hasil di terminal
+    # If there is no second argument, display the result in the terminal
     sed -E '
         s/\[\[([^\\\]]+)\\?\]\]\([^)]*\)/\1/g;
         s/\[([^]]+)\]\([^)]*\)/\1/g
     ' "$input_file"
 fi
-
