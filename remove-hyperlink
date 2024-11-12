@@ -33,16 +33,16 @@ validate_input_file() {
     if [ ! -f "$input_file" ]; then
         echo "Error: File '$input_file' not found." >&2
         exit $EXIT_FILE_NOT_FOUND
-    }
+    fi
     
     # Check if file is readable
     if [ ! -r "$input_file" ]; then
         echo "Error: Cannot read file '$input_file'. Check permissions." >&2
         exit $EXIT_PERMISSION_ERROR
-    }
+    fi
 }
 
-# Function to validate output file location
+# Function to validate output location
 validate_output_location() {
     local output_file="$1"
     local output_dir=$(dirname "$output_file")
@@ -51,18 +51,18 @@ validate_output_location() {
     if [ ! -d "$output_dir" ]; then
         echo "Error: Directory '$output_dir' does not exist." >&2
         exit $EXIT_PERMISSION_ERROR
-    }
+    fi
     
     if [ ! -w "$output_dir" ]; then
         echo "Error: Cannot write to directory '$output_dir'. Check permissions." >&2
         exit $EXIT_PERMISSION_ERROR
-    }
+    fi
     
     # If file exists, check if it's writable
     if [ -f "$output_file" ] && [ ! -w "$output_file" ]; then
         echo "Error: Cannot write to file '$output_file'. Check permissions." >&2
         exit $EXIT_PERMISSION_ERROR
-    }
+    fi
 }
 
 # Function to remove hyperlinks from markdown
