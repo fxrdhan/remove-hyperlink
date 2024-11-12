@@ -1,39 +1,127 @@
 #!/bin/bash
 
+# Global variables
+SCRIPT_NAME=$(basename "$0")
+EXIT_SUCCESS=0
+EXIT_INVALID_ARGS=1
+EXIT_FILE_NOT_FOUND=2
+EXIT_PERMISSION_ERROR=3
+
 # Function to display script usage
-usage() {
-    echo "Usage: $0 input.md [output.md]"
-    exit 1
+display_usage() {
+    cat << EOF
+Usage: $SCRIPT_NAME input.md [output.md]
+
+Remove hyperlinks from Markdown files.
+
+Arguments:
+    input.md    Input markdown file
+    output.md   Optional output file. If not specified, 
+                result will be displayed in terminal.
+
+Examples:
+    $SCRIPT_NAME input.md
+    $SCRIPT_NAME input.md output.md
+EOF
 }
 
-# Check if there is at least one argument
-if [ $# -lt 1 ]; then
-    usage
-fi
+# Function to validate input file
+validate_input_file() {
+    local input_file="$1"
+    
+    # Check if file exists
+    if [ ! -f "$input_file" ]; then
+        echo "Error: File '$input_file' not found." >&2
+        exit $EXIT_FILE_NOT_FOUND
+    }
+    
+    # Check if file is readable
+    if [ ! -r "$input_file" ]; then
+        echo "Error: Cannot read file '$input_file'. Check permissions." >&2
+        exit $EXIT_PERMISSION_ERROR
+    }
+}
 
-input_file="$1"
+# Function to validate output file location
+validate_output_location() {
+    local output_file="$1"
+    local output_dir=$(dirname "$output_file")
+    
+    # Check if output directory exists and is writable
+    if [ ! -d "$output_dir" ]; then
+        echo "Error: Directory '$output_dir' does not exist." >&2
+        exit $EXIT_PERMISSION_ERROR
+    }
+    
+    if [ ! -w "$output_dir" ]; then
+        echo "Error: Cannot write to directory '$output_dir'. Check permissions." >&2
+        exit $EXIT_PERMISSION_ERROR
+    }
+    
+    # If file exists, check if it's writable
+    if [ -f "$output_file" ] && [ ! -w "$output_file" ]; then
+        echo "Error: Cannot write to file '$output_file'. Check permissions." >&2
+        exit $EXIT_PERMISSION_ERROR
+    }
+}
 
-# Check if the input file exists
-if [ ! -f "$input_file" ]; then
-    echo "Error: File '$input_file' not found."
-    exit 1
-fi
-
-# If there is a second argument, use it as the output file
-if [ $# -ge 2 ]; then
-    output_file="$2"
-    # Use sed to remove hyperlinks and save to the output file
+# Function to remove hyperlinks from markdown
+remove_hyperlinks() {
+    local input_file="$1"
+    
     sed -E '
         # Remove hyperlinks with pattern [[text\]](url)
         s/\[\[([^\\\]]+)\\?\]\]\([^)]*\)/\1/g;
         # Remove standard hyperlinks [text](url)
-        s/\[([^]]+)\]\([^)]*\)/\1/g
-    ' "$input_file" > "$output_file"
-    echo "Hyperlinks have been removed and the result is saved in '$output_file'."
-else
-    # If there is no second argument, display the result in the terminal
-    sed -E '
-        s/\[\[([^\\\]]+)\\?\]\]\([^)]*\)/\1/g;
-        s/\[([^]]+)\]\([^)]*\)/\1/g
+        s/\[([^]]+)\]\([^)]*\)/\1/g;
+        # Remove bare URLs
+        s/https?:\/\/[[:alnum:]_\/.?=&#-]+//g;
+        # Clean up any double spaces created
+        s/[[:space:]]+/ /g
     ' "$input_file"
-fi
+}
+
+# Function to process the file and handle output
+process_file() {
+    local input_file="$1"
+    local output_file="$2"
+    
+    if [ -n "$output_file" ]; then
+        # Validate output location before processing
+        validate_output_location "$output_file"
+        
+        # Process and save to output file
+        if remove_hyperlinks "$input_file" > "$output_file"; then
+            echo "Success: Hyperlinks have been removed and saved to '$output_file'."
+        else
+            echo "Error: Failed to process file." >&2
+            exit $EXIT_PERMISSION_ERROR
+        fi
+    else
+        # Display result in terminal
+        remove_hyperlinks "$input_file"
+    fi
+}
+
+# Main function
+main() {
+    # Check number of arguments
+    if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+        display_usage
+        exit $EXIT_INVALID_ARGS
+    fi
+    
+    local input_file="$1"
+    local output_file="$2"
+    
+    # Validate input file
+    validate_input_file "$input_file"
+    
+    # Process the file
+    process_file "$input_file" "$output_file"
+    
+    exit $EXIT_SUCCESS
+}
+
+# Execute main function with all script arguments
+main "$@"
