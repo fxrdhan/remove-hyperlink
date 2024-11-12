@@ -1,58 +1,131 @@
-# remove-hyperlink Script
+# Markdown Link Remover Script
 
 ## Description
-This script removes hyperlink formatting from a Markdown file. It can process two types of hyperlink formats:
-1. `[[text\]](url)` 
-2. `[text](url)`
+This script removes hyperlink formatting from Markdown files with enhanced error handling and robustness. It processes multiple types of hyperlinks and URLs:
 
-It reads an input Markdown file and either outputs the result to the terminal or writes it to an output file if specified.
+1. Wiki-style links: `[[text\]](url)`
+2. Standard Markdown links: `[text](url)`
+3. Bare URLs: `https://example.com`
 
 ## Usage
-
 ```bash
-usage: ./remove-hyperlink input.md [output.md]
+./remove-hyperlink input.md [output.md]
 ```
 
-### Arguments:
-- `input.md` (Required)
+### Arguments
+- `input.md` (Required)  
+  Path to the input Markdown file containing hyperlinks.
   
-  The path to the input Markdown file containing hyperlinks.
-- `output.md` (Optional)
-  
-  The path to the output file where the modified Markdown content will be saved. If not provided, the output will be displayed in the terminal.
+- `output.md` (Optional)  
+  Path to the output file where the modified content will be saved.
+  If not specified, output will be displayed in the terminal.
 
-### Example Usage:
+### Examples
+```bash
+# Display modified content in terminal
+./remove-hyperlink input.md
 
-1. **Remove hyperlinks and display in the terminal:**
-   ```bash
-   ./remove-hyperlink input.md
-   ```
+# Save modified content to a file
+./remove-hyperlink input.md output.md
+```
 
-2. **Remove hyperlinks and save the result to an output file:**
-   ```bash
-   ./remove-hyperlink input.md output.md
-   ```
+## Features
 
-## Script Explanation
+### Error Handling
+- Input file validation
+  - Existence check
+  - Read permission check
+- Output location validation
+  - Directory existence check
+  - Write permission check
+  - File permission check if file exists
+- Clear error messages directed to stderr
 
-### Functions:
-- `usage()`
+### Exit Codes
+- `0`: Success
+- `1`: Invalid arguments
+- `2`: File not found
+- `3`: Permission error
 
-  Displays how to use the script and exits if the input arguments are incorrect.
+## Function Documentation
 
-### Steps:
-1. The script checks if at least one argument is provided.
-2. It verifies the existence of the input file.
-3. If a second argument (output file) is provided, the script removes the hyperlinks and writes the modified content to the output file.
-4. If no output file is provided, the script displays the modified content in the terminal.
+### Main Functions
 
-### Regular Expressions:
-- `s/\[\[([^\\\]]+)\\?\]\]\([^)]*\)/\1/g`
+#### `main()`
+- Entry point of the script
+- Handles argument validation and orchestrates the processing flow
+- Parameters: Command line arguments (`$@`)
 
-  Removes hyperlinks of the format `[[text\]](url)`.
-- `s/\[([^]]+)\]\([^)]*\)/\1/g`
+#### `display_usage()`
+- Shows detailed usage instructions and examples
+- No parameters
+- Called when invalid arguments are provided
 
-  Removes standard hyperlinks of the format `[text](url)`.
+#### `validate_input_file()`
+- Validates the existence and readability of input file
+- Parameters: `input_file` (string)
+- Exits with appropriate code if validation fails
+
+#### `validate_output_location()`
+- Checks if output location is writable
+- Parameters: `output_file` (string)
+- Validates both directory and file permissions
+
+#### `remove_hyperlinks()`
+- Processes the Markdown file to remove hyperlinks
+- Parameters: `input_file` (string)
+- Returns: Modified content with links removed
+
+#### `process_file()`
+- Handles file processing and output generation
+- Parameters: 
+  - `input_file` (string)
+  - `output_file` (string, optional)
+
+### Regular Expressions
+
+```sed
+# Remove wiki-style links
+s/\[\[([^\\\]]+)\\?\]\]\([^)]*\)/\1/g
+
+# Remove standard Markdown links
+s/\[([^]]+)\]\([^)]*\)/\1/g
+
+# Remove bare URLs
+s/https?:\/\/[[:alnum:]_\/.?=&#-]+//g
+
+# Clean up extra spaces
+s/[[:space:]]+/ /g
+```
+
+## Error Messages
+
+The script provides clear error messages for various scenarios:
+
+```bash
+# Invalid usage
+Usage: remove-hyperlink input.md [output.md]
+...
+
+# File not found
+Error: File 'input.md' not found.
+
+# Permission errors
+Error: Cannot read file 'input.md'. Check permissions.
+Error: Directory 'output_dir' does not exist.
+Error: Cannot write to directory 'output_dir'. Check permissions.
+Error: Cannot write to file 'output.md'. Check permissions.
+```
+
+## Success Messages
+
+```bash
+Success: Hyperlinks have been removed and saved to 'output.md'.
+```
+
+## Dependencies
+- Bash shell (version 4.0 or higher recommended)
+- sed (GNU sed recommended)
 
 ## License
-This script is provided "as is" and is free to use and modify under the MIT License.
+This script is provided under the MIT License.
