@@ -33,7 +33,7 @@ Remove Hyperlink is a Bash script designed to remove all types of hyperlinks fro
 3. **Give the Script Execution Permission:**
 
     ```bash
-    chmod +x remove-hyperlink.sh
+    chmod +x remove-hyperlink
     ```
 
 ## Usage
