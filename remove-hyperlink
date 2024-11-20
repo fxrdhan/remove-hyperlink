@@ -16,8 +16,7 @@ Remove hyperlinks from Markdown files.
 
 Arguments:
     input.md    Input markdown file
-    output.md   Optional output file. If not specified, 
-                result will be displayed in terminal.
+    output.md   Optional output file. If not specified, result will be displayed in terminal.
 
 Examples:
     $SCRIPT_NAME input.md
@@ -68,16 +67,33 @@ validate_output_location() {
 # Function to remove hyperlinks from markdown
 remove_hyperlinks() {
     local input_file="$1"
-    
     sed -E '
-        # Remove hyperlinks with pattern [[text\]](url)
-        s/\[\[([^\\\]]+)\\?\]\]\([^)]*\)/\1/g;
-        # Remove standard hyperlinks [text](url)
-        s/\[([^]]+)\]\([^)]*\)/\1/g;
-        # Remove bare URLs
-        s/https?:\/\/[[:alnum:]_\/.?=&#-]+//g;
-        # Clean up any double spaces created
-        s/[[:space:]]+/ /g
+        # Remove standard markdown links [text](url)
+        s/\[([^]]+)\]\(([^)]+)\)/\1/g;
+
+        # Remove wiki-style links [[text]](url)
+        s/\[\[([^]]+)\]\]\(([^)]+)\)/\1/g;
+
+        # Remove reference-style links [text][ref]
+        s/\[([^]]+)\]\[[^]]+\]/\1/g;
+
+        # Remove bare URLs (http, https, ftp, etc.)
+        s/\bhttps?:\/\/[^\s)]+//g;
+
+        # Remove reference definitions [ref]: url
+        s/^\[[^]]+\]:\s*.*$//g;
+
+        # Remove any remaining parentheses that might be left dangling after link removal
+        s/\([ \t]*\)//g;
+
+        # Clean up multiple spaces
+        s/[[:space:]]{2,}/ /g;
+
+        # Remove empty lines
+        /^[[:space:]]*$/d;
+
+        # Ensure single newline at end of file
+        $a\
     ' "$input_file"
 }
 
