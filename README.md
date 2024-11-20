@@ -1,131 +1,98 @@
-# Markdown Link Remover Script
+# Remove Hyperlink
 
-## Description
-This script removes hyperlink formatting from Markdown files. It processes multiple types of hyperlinks and URLs:
-
-1. Wiki-style links: `[[text\]](url)`
-2. Standard Markdown links: `[text](url)`
-3. Bare URLs: `https://example.com`
-
-## Usage
-```bash
-./remove-hyperlink input.md [output.md]
-```
-
-### Arguments
-- `input.md` (Required)  
-  Path to the input Markdown file containing hyperlinks.
-  
-- `output.md` (Optional)  
-  Path to the output file where the modified content will be saved.
-  If not specified, output will be displayed in the terminal.
-
-### Examples
-```bash
-# Display modified content in terminal
-./remove-hyperlink input.md
-
-# Save modified content to a file
-./remove-hyperlink input.md output.md
-```
+Remove Hyperlink is a Bash script designed to remove all types of hyperlinks from Markdown files. It supports various Markdown link formats, including standard links, wiki-style links, reference links, as well as unformatted URLs.
 
 ## Features
 
-### Error Handling
-- Input file validation
-  - Existence check
-  - Read permission check
-- Output location validation
-  - Directory existence check
-  - Write permission check
-  - File permission check if file exists
-- Clear error messages directed to stderr
+- **Remove Standard Links:** Removes links in the format `[text](URL)`.
+- **Remove Wiki Style Links:** Removes links in the format `[[text]](URL)`.
+- **Remove Reference Links:** Removes links in the format `[text][ref]` and their definitions.
+- **Remove Unformatted URLs:** Removes URLs that appear directly in the text.
+- **Special Character Handling:** Manage links with special characters and parentheses.
+- **Remove Empty Lines:** Delete lines that are empty or contain only spaces after the link removal process.
 
-### Exit Codes
-- `0`: Success
-- `1`: Invalid arguments
-- `2`: File not found
-- `3`: Permission error
+## Prerequisites
 
-## Function Documentation
+- **Bash shell:** This script is written using Bash and utilizes `sed` for text processing.
+- **Execution Permissions:** Make sure the script has execution permissions.
 
-### Main Functions
+## Installation
 
-#### `main()`
-- Entry point of the script
-- Handles argument validation and orchestrates the processing flow
-- Parameters: Command line arguments (`$@`)
+1. **Clone Repository:**
 
-#### `display_usage()`
-- Shows detailed usage instructions and examples
-- No parameters
-- Called when invalid arguments are provided
+    ```bash
+    git clone https://github.com/fxrdhan/remove-hyperlink.git
+    ```
 
-#### `validate_input_file()`
-- Validates the existence and readability of input file
-- Parameters: `input_file` (string)
-- Exits with appropriate code if validation fails
+2. **Navigate to Script Directory:**
 
-#### `validate_output_location()`
-- Checks if output location is writable
-- Parameters: `output_file` (string)
-- Validates both directory and file permissions
+    ```bash
+    cd remove-hyperlink
+    ```
 
-#### `remove_hyperlinks()`
-- Processes the Markdown file to remove hyperlinks
-- Parameters: `input_file` (string)
-- Returns: Modified content with links removed
+3. **Give the Script Execution Permission:**
 
-#### `process_file()`
-- Handles file processing and output generation
-- Parameters: 
-  - `input_file` (string)
-  - `output_file` (string, optional)
+    ```bash
+    chmod +x remove-hyperlink.sh
+    ```
 
-### Regular Expressions
+## Usage
 
-```sed
-# Remove wiki-style links
-s/\[\[([^\\\]]+)\\?\]\]\([^)]*\)/\1/g
+This script is used to remove hyperlinks from Markdown files. You can specify an input file and an output file. If the output file is not specified, the result will be displayed in the terminal.
 
-# Remove standard Markdown links
-s/\[([^]]+)\]\([^)]*\)/\1/g
-
-# Remove bare URLs
-s/https?:\/\/[[:alnum:]_\/.?=&#-]+//g
-
-# Clean up extra spaces
-s/[[:space:]]+/ /g
-```
-
-## Error Messages
-
-The script provides clear error messages for various scenarios:
+### Syntax
 
 ```bash
-# Invalid usage
-Usage: remove-hyperlink input.md [output.md]
-...
-
-# File not found
-Error: File 'input.md' not found.
-
-# Permission errors
-Error: Cannot read file 'input.md'. Check permissions.
-Error: Directory 'output_dir' does not exist.
-Error: Cannot write to directory 'output_dir'. Check permissions.
-Error: Cannot write to file 'output.md'. Check permissions.
+./remove-hyperlink.sh input.md [output.md]
 ```
 
-## Success Messages
+- ``input.md``: The Markdown file to be processed.
+- `output.md` _(optional)_: The result file to be saved. If not specified, the result will be displayed in the terminal.
 
-```bash
-Success: Hyperlinks have been removed and saved to 'output.md'.
+### Usage Example
+
+1. **Display Result in Terminal:**
+
+    ```bash
+    ./remove-hyperlink.sh input.md
+    ```
+
+2. **Save Results to Output File:**
+
+    ```bash
+    ./remove-hyperlink.sh input.md output.md
+    ```
+
+    After running the above command, the `output.md` file will contain a version of `input.md` without hyperlinks.
+
+## Example
+
+### Before Processing (`input.md`):
+
+```markdown
+This is a [simple link](https://example.com) in a sentence.
+Visit the [[wiki page]](https://wiki.example.com) for more information.
+Here are the [reference links][1].
+
+[1]: https://referensi.example.com
 ```
 
-## Dependencies
-- Bash shell (version 4.0 or higher recommended)
-- sed (GNU sed recommended)
+### After Processing (`output.md`):
+
+```markdown
+This is a simple link in a sentence.
+Visit the wiki page for more information.
+Here are the reference link.
+```
+
+## Contributions
+
+Contributions to the development of this script are very welcome.
 
 ## License
-This script is provided under the MIT License.
+
+This script is licensed under the [MIT License](LICENSE).
+
+## Support
+
+If you run into problems or have questions, please open an [issue](https://github.com/username/remove-hyperlink/issues) in this repository.
