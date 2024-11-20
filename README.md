@@ -43,7 +43,7 @@ This script is used to remove hyperlinks from Markdown files. You can specify an
 ### Syntax
 
 ```bash
-./remove-hyperlink.sh input.md [output.md]
+./remove-hyperlink input.md [output.md]
 ```
 
 - ``input.md``: The Markdown file to be processed.
@@ -54,13 +54,13 @@ This script is used to remove hyperlinks from Markdown files. You can specify an
 1. **Display Result in Terminal:**
 
     ```bash
-    ./remove-hyperlink.sh input.md
+    ./remove-hyperlink input.md
     ```
 
 2. **Save Results to Output File:**
 
     ```bash
-    ./remove-hyperlink.sh input.md output.md
+    ./remove-hyperlink input.md output.md
     ```
 
     After running the above command, the `output.md` file will contain a version of `input.md` without hyperlinks.
