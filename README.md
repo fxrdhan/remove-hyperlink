@@ -95,4 +95,4 @@ This script is licensed under the [MIT License](LICENSE).
 
 ## Support
 
-If you run into problems or have questions, please open an [issue](https://github.com/username/remove-hyperlink/issues) in this repository.
+If you run into problems or have questions, please open an [issue](https://github.com/fxrdhan/remove-hyperlink/issues) in this repository.
